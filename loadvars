@@ -1,0 +1,31 @@
+#!/bin/bash
+# Script to export keys from the password store.
+# https://github.com/taq/loadvars
+#
+# You need to source it using something like:
+#
+# . loadvars company
+#
+# or
+#
+# source loadvars company
+#
+# to make the exported variables work in your shell.
+# IT WONT WORK WITHOUT THE SOURCE COMMAND!
+
+# we need a safe dir
+SAFE=$1
+
+if [ -z "$SAFE" ]; then
+   echo "Need to send a safe!"
+   exit 1
+fi
+
+# for each key, export the key/value
+for KEY in $(pass ls $SAFE | sed -n 's/.*── //p'); do
+   PASS=$(pass show $SAFE/$KEY)           # extract the key
+   HIDDEN="${PASS:0:2}*****${PASS: -2}"   # make a hidden version
+
+   echo "Exporting $KEY with $HIDDEN ..."
+   export $KEY=$PASS # export it
+done
