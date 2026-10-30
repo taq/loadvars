@@ -22,7 +22,10 @@ if [ -z "$SAFE" ]; then
 fi
 
 # for each key, export the key/value
-for KEY in $(pass ls $SAFE | sed -n 's/.*── //p'); do
+for gpgfile in ~/.password-store/$SAFE/*.gpg; do
+   [ -f "$gpgfile" ] || continue
+
+   KEY=$(basename "$gpgfile" .gpg)
    PASS=$(pass show $SAFE/$KEY)           # extract the key
    HIDDEN="${PASS:0:2}*****${PASS: -2}"   # make a hidden version
 
